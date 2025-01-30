@@ -43,7 +43,7 @@
         $query = "INSERT INTO notifikasi_pembayaran (nisn, tgl_bayar, bulan_dibayar, tahun_dibayar, id_spp, jumlah_bayar, status) 
               VALUES ('$nisn', NOW(), '$bulan_dibayar', '$tahun_dibayar', '$id_spp', '$jumlah_bayar', 'pending')";
         if (mysqli_query($koneksi, $query)) {
-            echo "<script>alert('Pembayaran Anda berhasil diajukan. Tunggu konfirmasi dari admin.'); window.location='siswa.php';</script>";
+            echo "<script>alert('Pembayaran Anda berhasil diajukan. Tunggu konfirmasi dari admin.'); window.location='siswa-pembayaran-detail.php';</script>";
         } else {
             echo "<script>alert('Gagal mengajukan pembayaran. Silakan coba lagi.');</script>";
         }
