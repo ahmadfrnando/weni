@@ -51,7 +51,7 @@ $bulan_dibayar = $data['bulan_dibayar'];
 $tahun_dibayar = $data['tahun_dibayar'];
 
 // Integrasi Midtrans
-\Midtrans\Config::$serverKey = 'SB-Mid-server-hWKMcVUEiQ-LTZ23xqqcIjb_';
+\Midtrans\Config::$serverKey = '#';
 \Midtrans\Config::$isProduction = false;
 \Midtrans\Config::$isSanitized = true;
 \Midtrans\Config::$is3ds = true;
@@ -320,7 +320,7 @@ $snapToken = \Midtrans\Snap::getSnapToken($transaction);
                     <p>Status Bayar: <b><?= $status ?></b></p>
 
                     <button id="pay-button">Bayar Sekarang</button>
-                    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-fvNpxybRnXPOGXjy"></script>
+                    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="#"></script>
                     <script type="text/javascript">
                         document.getElementById('pay-button').onclick = function() {
                             snap.pay('<?= $snapToken; ?>', {
