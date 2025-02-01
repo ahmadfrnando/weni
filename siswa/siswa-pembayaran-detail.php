@@ -1,75 +1,90 @@
 <?php
-ob_start();
 session_start();
+include '../koneksi.php';
+require_once '../config_midtrans.php'; // Pastikan file konfigurasi Midtrans sudah dibuat
+
+// Pastikan user sudah login
 if (empty($_SESSION['nisn'])) {
-    echo "<script>alert('Maaf Anda Belum Login'); window.location.assign('../index.php');</script>";
+    echo "<script>alert('Maaf, Anda belum login!'); window.location='../index.php';</script>";
     exit();
 }
 
-include '../koneksi.php';
-require '../vendor/autoload.php'; // Midtrans SDK
+// Ambil id_pembayaran dari parameter URL
+if (!isset($_GET['id_pembayaran'])) {
+    echo "<script>alert('ID pembayaran tidak ditemukan!'); window.location='siswa.php';</script>";
+    exit();
+}
 
-// Konfigurasi Midtrans
-\Midtrans\Config::$serverKey = 'Mid-server-J6Wqlj-cDuT1PuYfxEJaUeFV';
-\Midtrans\Config::$isProduction = false; // false = Sandbox Mode, true = Production Mode
+$id_pembayaran = $_GET['id_pembayaran'];
+$status = $_GET['status'];
+$nisn = $_SESSION['nisn'];
+
+// Query untuk mengambil data pembayaran berdasarkan id_pembayaran
+$query = "SELECT np.*, s.nama 
+          FROM notifikasi_pembayaran np 
+          JOIN siswa s ON np.nisn = s.nisn 
+          WHERE np.id = '$id_pembayaran'";
+
+$result = mysqli_query($koneksi, $query);
+
+// **Tambahkan pengecekan jika query gagal**
+if (!$result) {
+    die("Query error: " . mysqli_error($koneksi));
+}
+
+$data = mysqli_fetch_assoc($result);
+
+if (!$data) {
+    echo "<script>alert('Data pembayaran tidak ditemukan!'); window.location='siswa.php';</script>";
+    exit();
+}
+
+if (!$data) {
+    echo "<script>alert('Data pembayaran tidak ditemukan!'); window.location='siswa.php';</script>";
+    exit();
+}
+
+// Data transaksi
+$nama_siswa = $data['nama'];
+$jumlah_bayar = $data['jumlah_bayar'];
+$bulan_dibayar = $data['bulan_dibayar'];
+$tahun_dibayar = $data['tahun_dibayar'];
+
+// Integrasi Midtrans
+\Midtrans\Config::$serverKey = 'SB-Mid-server-hWKMcVUEiQ-LTZ23xqqcIjb_';
+\Midtrans\Config::$isProduction = false;
 \Midtrans\Config::$isSanitized = true;
 \Midtrans\Config::$is3ds = true;
 
-$nisn = $_SESSION['nisn'];
+// Buat array transaksi untuk Midtrans
+$transaction_details = [
+    'order_id' => "SPP-{$id_pembayaran}",
+    'gross_amount' => $jumlah_bayar,
+];
 
-// Ambil informasi nama siswa dari database berdasarkan NISN
-$query_nama_siswa = mysqli_query($koneksi, "
-    SELECT siswa.*, spp.nominal 
-    FROM siswa 
-    JOIN spp ON siswa.id_spp = spp.id_spp 
-    WHERE siswa.nisn = '$nisn'");
-$data_siswa = mysqli_fetch_assoc($query_nama_siswa);
-if (!$data_siswa) {
-    echo "<script>alert('Data siswa tidak ditemukan! Silakan hubungi admin.'); window.location='logout.php';</script>";
-    exit();
-}
-$id_spp = $data_siswa['id_spp']; // Ambil id_spp dari hasil query sebelumnya
-$nama_siswa = $data_siswa['nama'];
+$item_details = [
+    [
+        'id' => "SPP-{$id_pembayaran}",
+        'price' => $jumlah_bayar,
+        'quantity' => 1,
+        'name' => "SPP Bulan $bulan_dibayar $tahun_dibayar",
+    ]
+];
 
-// Proses pembayaran menggunakan Midtrans
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $bulan_dibayar = $_POST['bulan_dibayar'];
-    $tahun_dibayar = $_POST['tahun_dibayar'];
-    $jumlah_bayar = $data_siswa['jumlah_bayar'];
+$customer_details = [
+    'first_name' => $nama_siswa,
+    'email' => "siswa{$nisn}@example.com",
+];
 
-    // Data transaksi ke Midtrans
-    $transaction_details = array(
-        'order_id' => "SPP-" . time(),
-        'gross_amount' => $jumlah_bayar,
-    );
+// Buat transaksi Snap Midtrans
+$transaction = [
+    'transaction_details' => $transaction_details,
+    'item_details' => $item_details,
+    'customer_details' => $customer_details,
+];
 
-    $item_details = array(
-        array(
-            'id' => 'SPP001',
-            'price' => $jumlah_bayar,
-            'quantity' => 1,
-            'name' => 'Pembayaran SPP Bulanan'
-        )
-    );
-
-    $customer_details = array(
-        'first_name' => $nama_siswa,
-        'email' => 'email@example.com',
-        'phone' => '08123456789'
-    );
-
-    $transaction = array(
-        'transaction_details' => $transaction_details,
-        'customer_details' => $customer_details,
-        'item_details' => $item_details
-    );
-
-    $snapToken = \Midtrans\Snap::getSnapToken($transaction);
-    echo json_encode(['snap_token' => $snapToken]);
-    exit();
-}
+$snapToken = \Midtrans\Snap::getSnapToken($transaction);
 ?>
-
 
 <!DOCTYPE html>
 <html lang="id">
@@ -299,31 +314,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="card">
                 <div class="card-body">
                     <h2>Pembayaran SPP</h2>
-                    <p>Nama: <?php echo $nama_siswa; ?></p>
-                    <p>Nominal SPP: Rp<?php echo number_format($data_siswa['nominal'], 2); ?></p>
-                    <button id="pay-button" class="btn btn-primary">Bayar Sekarang</button>
+                    <p>Nama Siswa: <b><?= $nama_siswa; ?></b></p>
+                    <p>Bulan Dibayar: <b><?= $bulan_dibayar; ?> <?= $tahun_dibayar; ?></b></p>
+                    <p>Jumlah Bayar: <b>Rp<?= number_format($jumlah_bayar, 2); ?></b></p>
+                    <p>Status Bayar: <b><?= $status ?></b></p>
+
+                    <button id="pay-button">Bayar Sekarang</button>
+                    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-fvNpxybRnXPOGXjy"></script>
+                    <script type="text/javascript">
+                        document.getElementById('pay-button').onclick = function() {
+                            snap.pay('<?= $snapToken; ?>', {
+                                onSuccess: function(result) {
+                                    window.location.href = "siswa-pembayaran-detail.php?id_pembayaran=<?= $id_pembayaran; ?>&status=sukses";
+                                },
+                                onPending: function(result) {
+                                    window.location.href = "siswa-pembayaran-detail.php?id_pembayaran=<?= $id_pembayaran; ?>&status=pending";
+                                },
+                                onError: function(result) {
+                                    alert("Pembayaran gagal!");
+                                }
+                            });
+                        };
+                    </script>
                 </div>
             </div>
         </div>
-
-        <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="ISI_DENGAN_CLIENT_KEY_MU"></script>
-        <script>
-            document.getElementById('pay-button').addEventListener('click', function() {
-                fetch('../checkout.php', {
-                        method: 'POST'
-                    }) // Pastikan checkout.php dikirim ulang
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log("Snap Token Baru:", data.snap_token);
-                        if (data.error) {
-                            alert("Error: " + data.error);
-                        } else {
-                            window.snap.pay(data.snap_token);
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-            });
-        </script>
 </body>
 
 </html>
