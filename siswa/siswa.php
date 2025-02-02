@@ -37,6 +37,14 @@
         $tahun_dibayar = $_POST['tahun_dibayar'];
         $jumlah_bayar = $data_siswa['nominal']; // nominal dari tabel spp
 
+        // Cek apakah sudah ada data pembayaran yang lunas
+        $query_cek = "SELECT * FROM notifikasi_pembayaran WHERE nisn = '$nisn' AND bulan_dibayar = '$bulan_dibayar' AND tahun_dibayar = '$tahun_dibayar' AND status = 'lunas'";
+        $result_cek = mysqli_query($koneksi, $query_cek);
+        if (mysqli_num_rows($result_cek) > 0) {
+            echo "<script>alert('Anda sudah melakukan pembayaran bulan ini'); window.location='siswa.php';</script>";
+            exit();
+        }
+
         // Query untuk insert data pembayaran
         $query = "INSERT INTO notifikasi_pembayaran (nisn, tgl_bayar, bulan_dibayar, tahun_dibayar, id_spp, jumlah_bayar, status) 
               VALUES ('$nisn', NOW(), '$bulan_dibayar', '$tahun_dibayar', '$id_spp', '$jumlah_bayar', 'pending')";
