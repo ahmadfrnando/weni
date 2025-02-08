@@ -14,7 +14,7 @@ if(mysqli_num_rows($query)>0){
     $_SESSION['level'] = $data['level'];
     if($data['level']=='admin'){
         header('location:admin/admin.php');
-    } elseif ($data['level']=='petugas'){
+    } elseif ($data['level']=='kepala sekolah'){
         header('location:petugas/petugas.php');
     } else{
         echo "<script>

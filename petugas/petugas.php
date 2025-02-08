@@ -6,9 +6,9 @@ if (empty($_SESSION['id_petugas'])) {
         alert('Maaf Anda Belum Login'); window.location.assign('../index2.php');
         </script>";
 }
-if ($_SESSION['level'] != 'petugas') {
+if ($_SESSION['level'] != 'kepala sekolah') {
     echo "<script>
-        alert('Maaf Anda Bukan Sesi Asdmin'); window.location.assign('../index2.php');
+        alert('Maaf Anda Bukan Sesi Admin'); window.location.assign('../index2.php');
         </script>";
 }
 
@@ -212,7 +212,7 @@ include '../koneksi.php';
                         <span class="description">Petugas</span>
                     </a>
                 </div>
-                <div class="list-item">
+                <!-- <div class="list-item">
                     <a href="petugas.php?url=siswa">
                         <i class="fa fa-user-graduate icon"></i>
                         <span class="description">Siswa</span>
@@ -223,7 +223,7 @@ include '../koneksi.php';
                         <i class="fa fa-file-alt icon"></i>
                         <span class="description">Pembayaran</span>
                     </a>
-                </div>
+                </div> -->
                 <div class="list-item">
                     <a href="petugas.php?url=laporan">
                         <i class="fa fa-user-graduate icon"></i>

@@ -6,6 +6,7 @@ if (!isset($_SESSION['nisn'])) {
 }
 
 include '../koneksi.php';
+require_once '../config.php';
 $nisn = $_SESSION['nisn'];
 
 // Ambil data siswa

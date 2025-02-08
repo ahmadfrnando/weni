@@ -1,6 +1,7 @@
 <?php
 session_start();
 include '../koneksi.php';
+require_once '../config.php';
 require_once '../config_midtrans.php'; // Pastikan file konfigurasi Midtrans sudah dibuat
 
 // Pastikan user sudah login
@@ -51,14 +52,14 @@ $bulan_dibayar = $data['bulan_dibayar'];
 $tahun_dibayar = $data['tahun_dibayar'];
 
 // Integrasi Midtrans
-\Midtrans\Config::$serverKey = '#';
+\Midtrans\Config::$serverKey = $MIDTRANS_SERVER_KEY;
 \Midtrans\Config::$isProduction = false;
 \Midtrans\Config::$isSanitized = true;
 \Midtrans\Config::$is3ds = true;
 
 // Buat array transaksi untuk Midtrans
 $transaction_details = [
-    'order_id' => "SPP-{$id_pembayaran}",
+    'order_id' => "SPP-{$id_pembayaran}-" . time(),
     'gross_amount' => $jumlah_bayar,
 ];
 
@@ -320,7 +321,7 @@ $snapToken = \Midtrans\Snap::getSnapToken($transaction);
                     <p>Status Bayar: <b><?= $status ?></b></p>
 
                     <button id="pay-button">Bayar Sekarang</button>
-                    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="#"></script>
+                    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key=$MIDTRANS_CLIENT_KEY></script>
                     <script type="text/javascript">
                         document.getElementById('pay-button').onclick = function() {
                             snap.pay('<?= $snapToken; ?>', {
