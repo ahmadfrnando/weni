@@ -15,10 +15,46 @@ $query_student = mysqli_query($koneksi, "
     FROM siswa 
     JOIN spp ON siswa.id_spp = spp.id_spp 
     WHERE siswa.nisn = '$nisn'");
+
 $student_data = mysqli_fetch_assoc($query_student);
 if (!$student_data) {
     echo "<script>alert('Data siswa tidak ditemukan! Silakan hubungi admin.'); window.location='logout.php';</script>";
     exit();
+}
+
+if (isset($_GET['id_pembayaran'])) {
+    $id_pembayaran = $_GET['id_pembayaran'];
+
+    // Update status pembayaran
+    $update_notifikasi = "UPDATE notifikasi_pembayaran SET status = 'lunas' WHERE id = '$id_pembayaran'";
+    $result_notifikasi = mysqli_query($koneksi, $update_notifikasi);
+
+    if (!$result_notifikasi) {
+        die("Query error: " . mysqli_error($koneksi));
+    }
+
+    // Ambil data pembayaran yang sesuai
+    $query_notifikasi = mysqli_query($koneksi, "SELECT jumlah_bayar FROM notifikasi_pembayaran WHERE id = '$id_pembayaran'");
+    $notifikasi = mysqli_fetch_assoc($query_notifikasi);
+
+    if (!$notifikasi) {
+        echo "<script>alert('Data pembayaran tidak ditemukan! Silakan hubungi admin.'); window.location='siswa.php?url=laporan';</script>";
+        exit();
+    }
+
+    $id_spp = $student_data['id_spp'];
+    $jumlah_bayar = $notifikasi['jumlah_bayar'];
+
+    // Gunakan prepared statement untuk insert data pembayaran
+    $stmt = $koneksi->prepare("INSERT INTO pembayaran (nisn, tgl_bayar, bulan_dibayar, tahun_dibayar, id_spp, jumlah_bayar) 
+                               VALUES (?, CURRENT_TIMESTAMP, MONTH(CURRENT_TIMESTAMP), YEAR(CURRENT_TIMESTAMP), ?, ?)");
+    $stmt->bind_param("sis", $nisn, $id_spp, $jumlah_bayar);
+
+    if ($stmt->execute()) {
+        echo "<script>alert('Pembayaran berhasil!'); window.location='siswa.php?url=laporan';</script>";
+    } else {
+        die("Query error: " . $stmt->error);
+    }
 }
 
 // Ambil data pembayaran

@@ -1,5 +1,4 @@
 <?php
-ob_start();
 session_start();
 if (empty($_SESSION['id_petugas'])) {
     echo "<script>
@@ -29,7 +28,6 @@ $query_notifikasi = "SELECT n.*, s.nama AS nama_siswa, k.nama_kelas
                      FROM notifikasi_pembayaran n
                      JOIN siswa s ON n.nisn = s.nisn
                      JOIN kelas k ON s.id_kelas = k.id_kelas
-                     WHERE n.status = 'pending'
                      ORDER BY n.tgl_bayar DESC";
 $result_notifikasi = mysqli_query($koneksi, $query_notifikasi);
 ?>
@@ -267,7 +265,7 @@ $result_notifikasi = mysqli_query($koneksi, $query_notifikasi);
                     </a>
                 </div>
                 <div class="list-item">
-                    <a href="admin.php?url=logout">
+                    <a href="./logout.php">
                         <i class="fa fa-sign-out-alt icon"></i>
                         <span class="description">Logout</span>
                     </a>
@@ -312,7 +310,7 @@ $result_notifikasi = mysqli_query($koneksi, $query_notifikasi);
                     echo "<th>Tahun Dibayar</th>";
                     echo "<th>Jumlah Bayar</th>";
                     echo "<th>Tanggal Bayar</th>";
-                    echo "<th>Aksi</th>";
+                    echo "<th>Status</th>";
                     echo "</tr>";
                     echo "</thead>";
                     echo "<tbody>";
@@ -328,9 +326,10 @@ $result_notifikasi = mysqli_query($koneksi, $query_notifikasi);
                         echo "<td>Rp" . number_format($notif['jumlah_bayar'], 2, ',', '.') . "</td>";
                         echo "<td>" . htmlspecialchars($notif['tgl_bayar']) . "</td>";
                         echo "<td>";
-                        echo "<form method='POST' action='konfirmasi-pembayaran.php' class='d-inline'>";
-                        echo "<input type='hidden' name='id_notifikasi' value='" . htmlspecialchars($notif['id']) . "'>";
-                        echo "<button type='submit' class='btn btn-success btn-sm'>Konfirmasi</button>";
+                        echo "<span class='badge " . ($notif['status'] == 'lunas' ? 'text-bg-success' : 'text-bg-danger') . "'>";
+                        echo htmlspecialchars($notif['status']);
+                        echo "</span>";
+                        echo "</td>";
                         echo "</form>";
                         echo "</td>";
                         echo "</tr>";
