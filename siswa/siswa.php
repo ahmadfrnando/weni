@@ -1,4 +1,4 @@
- <?php
+<?php
     ob_start();
     session_start();
     if (empty($_SESSION['nisn'])) {
@@ -50,12 +50,11 @@
               VALUES ('$nisn', NOW(), '$bulan_dibayar', '$tahun_dibayar', '$id_spp', '$jumlah_bayar', 'pending')";
         if (mysqli_query($koneksi, $query)) {
             $id_pembayaran = mysqli_insert_id($koneksi); // Mendapatkan id yang baru saja diinsert
-        }
-        if (mysqli_query($koneksi, $query)) {
             echo "<script>alert('Pembayaran Anda berhasil diajukan. Tunggu konfirmasi dari admin.'); window.location='siswa-pembayaran-detail.php?id_pembayaran=$id_pembayaran&status=pending';</script>";
         } else {
             echo "<script>alert('Gagal mengajukan pembayaran. Silakan coba lagi.');</script>";
         }
+        
     }
     ?>
 
@@ -320,7 +319,7 @@
                                  <input type="text" class="form-control" value="Rp<?php echo number_format($data_siswa['nominal'], 2); ?>" readonly>
                              </div>
                              <br>
-                             <button type="submit" class="btn btn-primary">Ajukan Pembayaran</button>
+                             <button type="submit" class="btn btn-primary">Lanjutkan Pembayaran</button>
                          </form>
                      <?php
                         } elseif ($file == 'laporan') {
@@ -352,7 +351,14 @@
                                              <td><?php echo $row['bulan_dibayar']; ?></td>
                                              <td><?php echo $row['tahun_dibayar']; ?></td>
                                              <td>Rp<?php echo number_format($row['jumlah_bayar'], 2); ?></td>
-                                             <td><?php echo ucfirst($row['status']); ?></td>
+                                             <td>
+                                                 <?php if ($row['status'] == 'lunas') { ?>
+                                                     <span class="badge text-bg-success"><?php echo ucfirst($row['status']); ?></span>
+                                                 <?php } else { ?>
+                                                     <span class="badge text-bg-warning"><?php echo ucfirst($row['status']); ?></span>
+                                                     <a class="badge text-bg-info" style="text-decoration: none;" href="siswa-pembayaran-detail.php?id_pembayaran=<?= $row['id']; ?>&status=pending">Bayar Sekarang</a>
+                                                 <?php } ?>
+                                             </td>
                                          </tr>
                                      <?php } ?>
                                  </tbody>

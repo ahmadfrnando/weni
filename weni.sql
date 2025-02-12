@@ -11,7 +11,7 @@
  Target Server Version : 90100 (9.1.0)
  File Encoding         : 65001
 
- Date: 08/02/2025 09:14:00
+ Date: 12/02/2025 19:37:20
 */
 
 SET NAMES utf8mb4;
@@ -58,7 +58,7 @@ CREATE TABLE `notifikasi_pembayaran` (
   KEY `id_spp` (`id_spp`),
   CONSTRAINT `notifikasi_pembayaran_ibfk_1` FOREIGN KEY (`nisn`) REFERENCES `siswa` (`nisn`),
   CONSTRAINT `notifikasi_pembayaran_ibfk_2` FOREIGN KEY (`id_spp`) REFERENCES `spp` (`id_spp`)
-) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of notifikasi_pembayaran
@@ -66,6 +66,8 @@ CREATE TABLE `notifikasi_pembayaran` (
 BEGIN;
 INSERT INTO `notifikasi_pembayaran` (`id`, `nisn`, `id_spp`, `bulan_dibayar`, `tahun_dibayar`, `jumlah_bayar`, `tgl_bayar`, `status`) VALUES (45, '0022457031', 6, 'Januari', '2025', 5000.00, '2025-02-07 16:08:10', 'pending');
 INSERT INTO `notifikasi_pembayaran` (`id`, `nisn`, `id_spp`, `bulan_dibayar`, `tahun_dibayar`, `jumlah_bayar`, `tgl_bayar`, `status`) VALUES (46, '0022457031', 6, 'Januari', '2025', 5000.00, '2025-02-07 16:08:10', 'pending');
+INSERT INTO `notifikasi_pembayaran` (`id`, `nisn`, `id_spp`, `bulan_dibayar`, `tahun_dibayar`, `jumlah_bayar`, `tgl_bayar`, `status`) VALUES (47, '0022457031', 6, 'Oktober', '2023', 5000.00, '2025-02-09 05:08:04', 'pending');
+INSERT INTO `notifikasi_pembayaran` (`id`, `nisn`, `id_spp`, `bulan_dibayar`, `tahun_dibayar`, `jumlah_bayar`, `tgl_bayar`, `status`) VALUES (48, '0022457031', 6, 'Oktober', '2023', 5000.00, '2025-02-09 05:08:04', 'pending');
 COMMIT;
 
 -- ----------------------------
@@ -168,6 +170,7 @@ INSERT INTO `siswa` (`nisn`, `nis`, `nama`, `id_kelas`, `alamat`, `no_telp`, `id
 INSERT INTO `siswa` (`nisn`, `nis`, `nama`, `id_kelas`, `alamat`, `no_telp`, `id_spp`) VALUES ('111176177', '3552', 'Nara Sahara Fransiska', 9, 'Jl. S. Parman No. 6 Kwala Begumit, Kec. Binjai, Kab. Langkat, Sumatera Utara', '089677665544', 4);
 INSERT INTO `siswa` (`nisn`, `nis`, `nama`, `id_kelas`, `alamat`, `no_telp`, `id_spp`) VALUES ('111596494', '3568', 'Bima Setiawan', 3, 'Jl. S. Parman No. 6 Kwala Begumit, Kec. Binjai, Kab. Langkat, Sumatera Utara', '089677665544', 4);
 INSERT INTO `siswa` (`nisn`, `nis`, `nama`, `id_kelas`, `alamat`, `no_telp`, `id_spp`) VALUES ('118706520', '3545', 'Keyla Andini', 3, 'Jl. S. Parman No. 6 Kwala Begumit, Kec. Binjai, Kab. Langkat, Sumatera Utara', '089677665544', 4);
+INSERT INTO `siswa` (`nisn`, `nis`, `nama`, `id_kelas`, `alamat`, `no_telp`, `id_spp`) VALUES ('12345', '123', 'Nando', 3, 'Jl. Garuda', '0821288828', 6);
 INSERT INTO `siswa` (`nisn`, `nis`, `nama`, `id_kelas`, `alamat`, `no_telp`, `id_spp`) VALUES ('123456789', '4321', 'Weni Rahayu', 2, 'Jl. Salak No.10', '082321332133', 1);
 INSERT INTO `siswa` (`nisn`, `nis`, `nama`, `id_kelas`, `alamat`, `no_telp`, `id_spp`) VALUES ('1234567890', '1234', 'Muhammad Prawira Nugraha', 12, 'Jl. Cendana No. 13 Medan Marelan', '089677665544', 4);
 INSERT INTO `siswa` (`nisn`, `nis`, `nama`, `id_kelas`, `alamat`, `no_telp`, `id_spp`) VALUES ('23456789', '98765', 'Aulia Arsy', 6, 'Jl. Beo No. 09', '082233445566', 4);

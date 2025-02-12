@@ -2,7 +2,7 @@
 require_once '../config_midtrans.php'; // Pastikan file config Midtrans ada
 include '../koneksi.php';
 
-\Midtrans\Config::$serverKey = '#';
+\Midtrans\Config::$serverKey = $MIDTRANS_SERVER_KEY;
 \Midtrans\Config::$isProduction = false;
 \Midtrans\Config::$isSanitized = true;
 \Midtrans\Config::$is3ds = true;

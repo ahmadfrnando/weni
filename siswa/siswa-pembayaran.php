@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $query_bayar = "INSERT INTO notifikasi_pembayaran (nisn, id_spp, bulan_dibayar, tahun_dibayar, jumlah_bayar) 
                     VALUES ('$nisn', '$id_spp', '$bulan_dibayar', '$tahun_dibayar', '$jumlah_bayar')";
     if (mysqli_query($koneksi, $query_bayar)) {
-        echo "<script>alert('Pembayaran berhasil! Menunggu konfirmasi admin.');</script>";
+        echo "<script>alert('Pembayaran berhasil! Silahkan lakukan pembayaran.');</script>";
     } else {
         echo "<script>alert('Pembayaran gagal. Silakan coba lagi.');</script>";
     }

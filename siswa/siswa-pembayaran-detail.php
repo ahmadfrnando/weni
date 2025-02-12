@@ -1,5 +1,21 @@
 <?php
+// Mulai session
 session_start();
+
+// // Periksa apakah session telah terdaftar untuk username tersebut
+// if(isset($_SESSION['nisn'])) {
+//     // Dan jika terdaftar
+//     echo 'Selamat Datang, ' . $_SESSION['nisn'] . '! Session anda telah terdaftar';
+// } else {
+//     // Jika tidak terdaftar, kembalikan user ke login.html
+//     echo '<meta http-equiv="refresh" content="0;url=http://localhost/login.html">';
+//     exit; // Pastikan tidak ada kode yang dieksekusi setelah melakukan redirect
+// }
+
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 include '../koneksi.php';
 require_once '../config.php';
 require_once '../config_midtrans.php'; // Pastikan file konfigurasi Midtrans sudah dibuat
@@ -50,6 +66,7 @@ $nama_siswa = $data['nama'];
 $jumlah_bayar = $data['jumlah_bayar'];
 $bulan_dibayar = $data['bulan_dibayar'];
 $tahun_dibayar = $data['tahun_dibayar'];
+$id_spp = $data['id_spp'];
 
 // Integrasi Midtrans
 \Midtrans\Config::$serverKey = $MIDTRANS_SERVER_KEY;
@@ -218,6 +235,15 @@ $snapToken = \Midtrans\Snap::getSnapToken($transaction);
             transition: transform 0.3s;
         }
 
+        #pay-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
         #menu-button:hover {
             transform: rotate(90deg);
         }
@@ -321,7 +347,7 @@ $snapToken = \Midtrans\Snap::getSnapToken($transaction);
                     <p>Status Bayar: <b><?= $status ?></b></p>
 
                     <button id="pay-button">Bayar Sekarang</button>
-                    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-clientkey="<?= $MIDTRANS_CLIENT_KEY ?>"></script>
+                    <script src="https://app.midtrans.com/snap/snap.js" data-client-key="<?= $MIDTRANS_CLIENT_KEY ?>"></script>
                     <script type="text/javascript">
                         document.getElementById('pay-button').onclick = function() {
                             snap.pay('<?= $snapToken; ?>', {

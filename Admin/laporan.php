@@ -45,6 +45,7 @@
         <td>NISN</td>
         <td>Nama</td>
         <td>Kelas</td>
+        <td>Bulan</td>
         <td>Tahun SPP</td>
         <td>Status</td>
         <td>Tanggal Bayar</td>
@@ -57,33 +58,37 @@
     $bulan = isset($_GET['bulan']) ? $_GET['bulan'] : date('m'); // Bulan saat ini
     $tahun = isset($_GET['tahun']) ? $_GET['tahun'] : date('Y'); // Tahun saat ini
 
-    // Query dengan filter bulan dan tahun
-    $sql = "SELECT siswa.nisn, siswa.nama, kelas.nama_kelas, spp.tahun, 
-            spp.nominal, pembayaran.jumlah_bayar, pembayaran.tgl_bayar, np.status
-            FROM siswa 
+    // Konversi angka bulan ke nama bulan
+    $bulan_nama = [
+        1 => "Januari", 2 => "Februari", 3 => "Maret", 4 => "April", 
+        5 => "Mei", 6 => "Juni", 7 => "Juli", 8 => "Agustus", 
+        9 => "September", 10 => "Oktober", 11 => "November", 12 => "Desember"
+    ];
+
+    // Query hanya mengambil data dari pembayaran
+    $sql = "SELECT pembayaran.nisn, siswa.nama, kelas.nama_kelas, spp.tahun, 
+                   pembayaran.tgl_bayar, pembayaran.bulan_dibayar
+            FROM pembayaran
+            LEFT JOIN siswa ON pembayaran.nisn = siswa.nisn
             LEFT JOIN kelas ON siswa.id_kelas = kelas.id_kelas
             LEFT JOIN spp ON siswa.id_spp = spp.id_spp
-            LEFT JOIN pembayaran ON siswa.nisn = pembayaran.nisn
-            LEFT JOIN notifikasi_pembayaran np ON siswa.nisn = np.nisn
-            WHERE MONTH(pembayaran.tgl_bayar) = '$bulan' AND YEAR(pembayaran.tgl_bayar) = '$tahun'
-            ORDER BY siswa.nama ASC";
+            WHERE MONTH(pembayaran.tgl_bayar) = '$bulan' 
+            AND YEAR(pembayaran.tgl_bayar) = '$tahun'
+            ORDER BY pembayaran.tgl_bayar ASC";
 
     $query = mysqli_query($koneksi, $sql) or die(mysqli_error($koneksi));
 
     if (mysqli_num_rows($query) > 0) {
-        foreach ($query as $data) {
-            $status = ($data['jumlah_bayar'] >= $data['nominal']) ? "Lunas" : "Belum Lunas";
-    ?>
+        while ($data = mysqli_fetch_assoc($query)) { ?>
             <tr>
                 <td><?= $no++; ?></td>
                 <td><?= $data['nisn'] ?></td>
-                <td><?= $data['nama'] ?></td>
-                <td><?= $data['nama_kelas'] ?></td>
-                <td><?= $data['tahun'] ?></td>
+                <td><?= $data['nama'] ? $data['nama'] : 'Tidak Ada' ?></td>
+                <td><?= $data['nama_kelas'] ? $data['nama_kelas'] : 'Tidak Ada' ?></td>
+                <td><?= isset($bulan_nama[$data['bulan_dibayar']]) ? $bulan_nama[$data['bulan_dibayar']] : '-'; ?></td>
+                <td><?= $data['tahun'] ? $data['tahun'] : '-' ?></td>
                 <td>
-                    <span class="badge <?= $data['status'] == 'lunas' ? 'text-bg-success' : 'text-bg-danger'; ?>">
-                        <?= $data['status']; ?>
-                    </span>
+                    <span class="badge text-bg-success">lunas</span>
                 </td>
                 <td><?= $data['tgl_bayar'] ? $data['tgl_bayar'] : '-'; ?></td>
             </tr>
