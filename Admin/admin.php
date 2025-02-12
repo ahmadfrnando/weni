@@ -1,4 +1,5 @@
 <?php
+// test remote skrispi local
 session_start();
 if (empty($_SESSION['id_petugas'])) {
     echo "<script>
